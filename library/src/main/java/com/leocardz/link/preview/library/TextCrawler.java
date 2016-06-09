@@ -69,7 +69,7 @@ public class TextCrawler {
 		@Override
 		protected Void doInBackground(String... params) {
 			// Don't forget the http:// or https://
-			urls = SearchUrls.matches(params[0]);
+			urls = SearchUrls.INSTANCE.matches(params[0]);
 
 			if (urls.size() > 0)
 				sourceContent
@@ -105,7 +105,7 @@ public class TextCrawler {
 								.get("description"));
 
 						if (sourceContent.getTitle().equals("")) {
-							String matchTitle = Regex.pregMatch(
+							String matchTitle = Regex.INSTANCE.pregMatch(
 									sourceContent.getHtmlCode(),
 									Regex.TITLE_PATTERN, 2);
 
@@ -127,7 +127,7 @@ public class TextCrawler {
 								sourceContent.getImages().add(
 										metaTags.get("image"));
 							else {
-								sourceContent.setImages(getImages(doc,
+								sourceContent.setImages((ArrayList<String>) getImages(doc,
 										imageQuantity));
 							}
 						}
@@ -142,7 +142,7 @@ public class TextCrawler {
 			String[] finalLinkSet = sourceContent.getFinalUrl().split("&");
 			sourceContent.setUrl(finalLinkSet[0]);
 
-			sourceContent.setCannonicalUrl(cannonicalPage(sourceContent
+			sourceContent.setCanonicalUrl(cannonicalPage(sourceContent
 					.getFinalUrl()));
 			sourceContent.setDescription(stripTags(sourceContent
 					.getDescription()));
@@ -152,7 +152,7 @@ public class TextCrawler {
 
 		/** Verifies if the content could not be retrieved */
 		public boolean isNull() {
-			return !sourceContent.isSuccess() && 
+			return !sourceContent.getSuccess() &&
 				extendedTrim(sourceContent.getHtmlCode()).equals("") && 
 				!isImage(sourceContent.getFinalUrl());
 		}
@@ -165,7 +165,7 @@ public class TextCrawler {
 		String pattern = "<" + tag + "(.*?)>(.*?)</" + tag + ">";
 		String result = "", currentMatch = "";
 
-		List<String> matches = Regex.pregMatchAll(content, pattern, 2);
+		List<String> matches = Regex.INSTANCE.pregMatchAll(content, pattern, 2);
 		
 		int matchesSize = matches.size();
 		for (int i = 0; i < matchesSize; i++) {
@@ -177,7 +177,7 @@ public class TextCrawler {
 		}
 
 		if (result.equals("")) {
-			String matchFinal = Regex.pregMatch(content, pattern, 2);
+			String matchFinal = Regex.INSTANCE.pregMatch(content, pattern, 2);
 			result = extendedTrim(matchFinal);
 		}
 
@@ -277,7 +277,7 @@ public class TextCrawler {
 		metaTags.put("description", "");
 		metaTags.put("image", "");
 
-		List<String> matches = Regex.pregMatchAll(content,
+		List<String> matches = Regex.INSTANCE.pregMatchAll(content,
 				Regex.METATAG_PATTERN, 1);
 
 		for (String match : matches) {
@@ -317,7 +317,7 @@ public class TextCrawler {
 
 	/** Gets content from metatag */
 	private String separeMetaTagsContent(String content) {
-		String result = Regex.pregMatch(content, Regex.METATAG_CONTENT_PATTERN,
+		String result = Regex.INSTANCE.pregMatch(content, Regex.METATAG_CONTENT_PATTERN,
 				1);
 		return htmlDecode(result);
 	}
